@@ -73,4 +73,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Patient::class, 'user_id', 'id');
     }
+
+    /**
+     * Get the nurse associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function nurse(): HasOne
+    {
+        return $this->hasOne(Nurse::class, 'user_id', 'id');
+    }
 }
