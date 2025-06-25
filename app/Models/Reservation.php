@@ -14,7 +14,7 @@ class Reservation extends Model
     protected $table = 'reservation';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
-    protected $incrementing = false;
+    public $incrementing = false;
 
     protected static function boot()
     {

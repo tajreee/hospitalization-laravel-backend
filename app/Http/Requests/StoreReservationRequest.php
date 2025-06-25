@@ -25,8 +25,8 @@ class StoreReservationRequest extends FormRequest
             'date_in'     => ['required', 'date', 'after_or_equal:today'],
             'date_out'    => ['required', 'date', 'after:date_in'],
             'total_fee'   => ['required', 'numeric', 'min:0'],
-            'patient_id'  => ['required', 'exists:patient,id'],
-            'nurse_id'    => ['required', 'exists:nurse,id'],
+            'patient_id'  => ['required', 'exists:patient,user_id'],
+            'nurse_id'    => ['required', 'exists:nurse,user_id'],
             'room_id'     => ['required', 'exists:room,id'],
             'facilities'  => ['array'],
             'facilities.*' => ['exists:facility,id'],
@@ -48,6 +48,25 @@ class StoreReservationRequest extends FormRequest
             'numeric'       => ':attribute harus berupa angka.',
             'min'           => ':attribute minimal :min.',
             'exists'        => ':attribute yang dipilih tidak valid.',
+        ];
+    }
+
+    /**
+     * Get the custom attribute names.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'date_in'     => 'Tanggal Masuk',
+            'date_out'    => 'Tanggal Keluar',
+            'total_fee'   => 'Total Biaya',
+            'patient_id'  => 'Pasien',
+            'nurse_id'    => 'Perawat',
+            'room_id'     => 'Ruangan',
+            'facilities'  => 'Fasilitas',
+            'facilities.*' => 'Ada fasilitas',
         ];
     }
 }
