@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class Facility extends Model
 {
@@ -14,7 +15,7 @@ class Facility extends Model
     protected $table = 'facility';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
-    protected $incrementing = false;
+    public $incrementing = false;
 
     protected static function boot()
     {
