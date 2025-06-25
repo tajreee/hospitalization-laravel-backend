@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\User; // Import Model User
+use App\Models\Patient; // Import Model Patient
+use App\Http\Requests\StorePatientRequest; // Import Form Request Class yang sudah kita buat
+use Illuminate\Support\Facades\Hash; // Untuk hashing password
+use Illuminate\Support\Facades\DB; // Untuk Database Transactions
 
 class PatientController extends Controller
 {
