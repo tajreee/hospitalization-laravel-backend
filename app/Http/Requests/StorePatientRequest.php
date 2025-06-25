@@ -23,7 +23,7 @@ class StorePatientRequest extends FormRequest
     {
         return [
             'name'          => ['required', 'string', 'max:255'],
-            'email'         => ['required', 'string', 'email', 'max:255', 'unique:patient,email'],
+            'email'         => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'gender'        => ['required', 'string', 'in:laki-laki,perempuan'],
             'password'      => ['required', 'string', 'min:8'],
             'nik'           => ['required', 'string', 'digits:16', 'unique:patient,nik'],
