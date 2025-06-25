@@ -17,7 +17,7 @@ use App\Http\Controllers\NurseController; // Pastikan ini ada
 */
 
 // Rute untuk registrasi pasien baru
-Route::post('/patients', [PatientController::class, 'store']);
+Route::post('/patients/create', [PatientController::class, 'store']);
 Route::post('/nurses/create', [NurseController::class, 'store']);
 
 // ... rute-rute lain jika ada ...
