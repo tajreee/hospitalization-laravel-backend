@@ -21,6 +21,7 @@ class StoreRoomRequest extends FormRequest
      */
     public function rules(): array
     {
+        // dd($this->all());
         return [
             'name'              => ['required', 'string', 'max:255'],
             'description'       => ['required', 'string', 'max:1000'],

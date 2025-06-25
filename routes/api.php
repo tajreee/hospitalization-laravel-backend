@@ -9,6 +9,7 @@ Route::get('/user', function (Request $request) {
 
 use App\Http\Controllers\PatientController; // Pastikan ini ada
 use App\Http\Controllers\NurseController; // Pastikan ini ada
+use App\Http\Controllers\RoomController; // Pastikan ini ada
 
 /*
 |--------------------------------------------------------------------------
@@ -19,5 +20,6 @@ use App\Http\Controllers\NurseController; // Pastikan ini ada
 // Rute untuk registrasi pasien baru
 Route::post('/patients/create', [PatientController::class, 'store']);
 Route::post('/nurses/create', [NurseController::class, 'store']);
+Route::post('/rooms/create', [RoomController::class, 'store']);
 
 // ... rute-rute lain jika ada ...
