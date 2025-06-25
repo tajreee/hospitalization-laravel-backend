@@ -8,6 +8,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 use App\Http\Controllers\PatientController; // Pastikan ini ada
+use App\Http\Controllers\NurseController; // Pastikan ini ada
 
 /*
 |--------------------------------------------------------------------------
@@ -17,5 +18,6 @@ use App\Http\Controllers\PatientController; // Pastikan ini ada
 
 // Rute untuk registrasi pasien baru
 Route::post('/patients', [PatientController::class, 'store']);
+Route::post('/nurses/create', [NurseController::class, 'store']);
 
 // ... rute-rute lain jika ada ...
