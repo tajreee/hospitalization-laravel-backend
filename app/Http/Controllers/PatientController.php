@@ -25,6 +25,8 @@ class PatientController extends Controller
                 ]);
 
                 return response()->json([
+                    'success' => true,
+                    'status'  => 201,
                     'message' => 'User dan Patient berhasil dibuat.',
                     'user'    => $user->only(['id', 'name', 'email', 'gender']),
                     'patient' => $patient->only(['user_id', 'nik', 'birth_date']),
