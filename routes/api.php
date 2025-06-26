@@ -19,11 +19,30 @@ use App\Http\Controllers\ReservationController; // Pastikan ini ada
 |--------------------------------------------------------------------------
 */
 
-// Rute untuk registrasi pasien baru
-Route::post('/patients/create', [PatientController::class, 'store']);
-Route::post('/nurses/create', [NurseController::class, 'store']);
-Route::post('/rooms/create', [RoomController::class, 'store']);
-Route::post('/facilities/create', [FacilityController::class, 'store']);
-Route::post('/reservations/create', [ReservationController::class, 'store']);
+// Patient routes
+Route::prefix('patients')->group(function () {
+    Route::post('/create', [PatientController::class, 'store']);
+    Route::get('/{patient:nik}', [PatientController::class, 'getPatientByNIK']);
+});
+
+// Nurse routes
+Route::prefix('nurses')->group(function () {
+    Route::post('/create', [NurseController::class, 'store']);
+});
+
+// Room routes
+Route::prefix('rooms')->group(function () {
+    Route::post('/create', [RoomController::class, 'store']);
+});
+
+// Facility routes
+Route::prefix('facilities')->group(function () {
+    Route::post('/create', [FacilityController::class, 'store']);
+});
+
+// Reservation routes
+Route::prefix('reservations')->group(function () {
+    Route::post('/create', [ReservationController::class, 'store']);
+});
 
 // ... rute-rute lain jika ada ...

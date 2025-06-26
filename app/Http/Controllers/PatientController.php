@@ -37,4 +37,22 @@ class PatientController extends Controller
             throw $th;
         }
     }
+
+    public function getPatientByNIK(Patient $patient) {
+        $patient->load('user');
+        
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'Data pasien berhasil ditemukan.',
+            'patient' => [
+                'user_id' => $patient->user_id,
+                'name' => $patient->user->name,
+                'email' => $patient->user->email,
+                'gender' => $patient->user->gender,
+                'nik' => $patient->nik,
+                'birth_date' => $patient->birth_date,
+            ],
+        ], 200);
+    }
 }
