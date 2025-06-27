@@ -49,4 +49,24 @@ class ReservationController extends Controller
             ], 500);
         }
     }
+
+    public function reservations(Request $request)
+    {
+        $reservations = Reservation::with([
+            'patient', 
+            'patient.user', // Include the user relationship from patient
+            'nurse', 
+            'room', 
+            'facilities'
+        ])
+            ->latest()
+            ->paginate($request->per_page ?? 10);
+
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'Reservations retrieved successfully.',
+            'data'    => $reservations,
+        ], 200);
+    }
 }

@@ -43,6 +43,7 @@ Route::prefix('facilities')->group(function () {
 // Reservation routes
 Route::prefix('reservations')->group(function () {
     Route::post('/create', [ReservationController::class, 'store']);
+    Route::get('/', [ReservationController::class, 'reservations']);
 });
 
 // ... rute-rute lain jika ada ...
