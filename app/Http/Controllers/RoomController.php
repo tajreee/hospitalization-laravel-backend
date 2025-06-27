@@ -44,4 +44,25 @@ class RoomController extends Controller
             'room'    => $room->only(['id', 'name', 'description', 'max_capacity', 'price_per_day']),
         ], 200);
     }
+
+    public function deleteRoom(Room $room) {
+        try {
+            return DB::transaction(function () use ($room) {
+                $room->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'status'  => 200,
+                    'message' => 'Room deleted successfully.',
+                ], 200);
+            });
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'status'  => 500,
+                'message' => 'Failed to delete room.',
+                'error'   => $th->getMessage()
+            ], 500);
+        }
+    }
 }

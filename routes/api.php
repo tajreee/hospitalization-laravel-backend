@@ -34,6 +34,7 @@ Route::prefix('nurses')->group(function () {
 Route::prefix('rooms')->group(function () {
     Route::post('/create', [RoomController::class, 'store']);
     Route::get('/{room:id}', [RoomController::class, 'getRoomById']);
+    Route::delete('/{room:id}/delete', [RoomController::class, 'deleteRoom']);
 });
 
 // Facility routes
