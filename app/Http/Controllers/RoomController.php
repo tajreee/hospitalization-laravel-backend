@@ -35,4 +35,13 @@ class RoomController extends Controller
             ], 500);
         }
     }
+
+    public function getRoomById(Room $room) {
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'Room retrieved successfully.',
+            'room'    => $room->only(['id', 'name', 'description', 'max_capacity', 'price_per_day']),
+        ], 200);
+    }
 }

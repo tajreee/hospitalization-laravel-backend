@@ -33,6 +33,7 @@ Route::prefix('nurses')->group(function () {
 // Room routes
 Route::prefix('rooms')->group(function () {
     Route::post('/create', [RoomController::class, 'store']);
+    Route::get('/{room:id}', [RoomController::class, 'getRoomById']);
 });
 
 // Facility routes
