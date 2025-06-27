@@ -38,6 +38,7 @@ Route::prefix('rooms')->group(function () {
 // Facility routes
 Route::prefix('facilities')->group(function () {
     Route::post('/create', [FacilityController::class, 'store']);
+    Route::get('/', [FacilityController::class, 'facilities']);
 });
 
 // Reservation routes

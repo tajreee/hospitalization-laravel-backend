@@ -33,4 +33,18 @@ class FacilityController extends Controller
             ], 500);
         }
     }
+
+    public function facilities(Request $request)
+    {
+        $facilities = Facility::all();
+
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'Facilities retrieved successfully.',
+            'facilities' => $facilities->map(function ($facility) {
+                return $facility->only(['id', 'name', 'fee']);
+            }),
+        ], 200);
+    }
 }
