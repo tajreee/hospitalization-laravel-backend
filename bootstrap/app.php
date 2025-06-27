@@ -50,5 +50,16 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 404);
             }
         });
+
+        // Handle method not allowed exceptions and return JSON response
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 405,
+                    'message' => 'Method not allowed.',
+                ], 405);
+            }
+        });
         
     })->create();
