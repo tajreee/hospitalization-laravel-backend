@@ -47,4 +47,26 @@ class FacilityController extends Controller
             }),
         ], 200);
     }
+
+    public function deleteFacility(Facility $facility)
+    {
+        try {
+            return DB::transaction(function () use ($facility) {
+                $facility->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'status'  => 200,
+                    'message' => 'Facility deleted successfully.',
+                ], 200);
+            });
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'status'  => 500,
+                'message' => 'Failed to delete facility.',
+                'error'   => $th->getMessage()
+            ], 500);
+        }
+    }
 }
