@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB; // Untuk Database Transactions
 
 class PatientController extends Controller
 {
-    public function store(StorePatientRequest $request) {
+    public static function store(StorePatientRequest $request) {
         try {
             return DB::transaction(function () use ($request) {
                 $user = User::create([

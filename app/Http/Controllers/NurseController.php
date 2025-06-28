@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB; // Untuk Database Transactions
 
 class NurseController extends Controller
 {
-    public function store(StoreNurseRequest $request) {
+    public static function store(StoreNurseRequest $request) {
         try {
             return DB::transaction(function () use ($request) {
                 $user = User::create([
