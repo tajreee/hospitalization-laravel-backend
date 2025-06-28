@@ -18,6 +18,7 @@ class NurseController extends Controller
                     'name' => $request->name,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
+                    'role' => 'nurse', // Set role to 'nurse'
                 ]);
 
                 $nurse = $user->nurse()->create();
@@ -26,7 +27,7 @@ class NurseController extends Controller
                     'success' => true,
                     'status'  => 201,
                     'message' => 'User and Nurse created successfully.',
-                    'user'    => $user->only(['id', 'name', 'email']),
+                    'user'    => $user->only(['id', 'name', 'email', 'role']),
                     'nurse'   => $nurse->only(['user_id']),
                 ], 201);
             });

@@ -28,6 +28,7 @@ class StorePatientRequest extends FormRequest
             'password'      => ['required', 'string', 'min:8'],
             'nik'           => ['required', 'string', 'digits:16', 'unique:patient,nik'],
             'birth_date'    => ['required', 'date', 'before:today'],
+            'role'          => ['required', 'string', 'in:patient,nurse'], // Pastikan role diatur ke 'patient'
         ];
     }
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('gender', ['laki-laki', 'perempuan'])->default('laki-laki');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['nurse', 'patient'])->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

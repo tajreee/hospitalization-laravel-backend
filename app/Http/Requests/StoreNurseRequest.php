@@ -25,6 +25,7 @@ class StoreNurseRequest extends FormRequest
             'name'          => ['required', 'string', 'max:255'],
             'email'         => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password'      => ['required', 'string', 'min:8'],
+            'role'          => ['required', 'string', 'in:nurse,patient'], // Ensure role is set to 'nurse'
         ];
     }
 

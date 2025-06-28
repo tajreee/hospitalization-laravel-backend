@@ -17,6 +17,7 @@ class PatientController extends Controller
                     'name' => $request->name,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
+                    'role' => 'patient', // Set role to 'patient'
                 ]);
 
                 $patient = $user->patient()->create([
@@ -28,7 +29,7 @@ class PatientController extends Controller
                     'success' => true,
                     'status'  => 201,
                     'message' => 'User dan Patient berhasil dibuat.',
-                    'user'    => $user->only(['id', 'name', 'email', 'gender']),
+                    'user'    => $user->only(['id', 'name', 'email', 'gender', 'role']),
                     'patient' => $patient->only(['user_id', 'nik', 'birth_date']),
                 ], 201);
 
