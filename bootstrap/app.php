@@ -15,8 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         // Handle validation exceptions and return JSON response
         $exceptions->renderable(function (ValidationException $exception, Request $request) {
@@ -59,6 +62,17 @@ return Application::configure(basePath: dirname(__DIR__))
                     'status'  => 405,
                     'message' => 'Method not allowed.',
                 ], 405);
+            }
+        });
+
+        // Handle unauthorized exceptions and return JSON response
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 401,
+                    'message' => 'Unauthorized.',
+                ], 401);
             }
         });
         
