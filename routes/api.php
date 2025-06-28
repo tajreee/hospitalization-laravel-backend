@@ -26,9 +26,9 @@ Route::post('/auth/register', function(Request $request) {
     $role = $request->input('role');
     
     if ($role === 'nurse') {
-        return app()->call([NurseController::class, 'create'], $request->all());
+        return app()->call([NurseController::class, 'store'], $request->all());
     } else {
-        return app()->call([PatientController::class, 'create'], $request->all());
+        return app()->call([PatientController::class, 'store'], $request->all());
     }
 });
 
