@@ -70,8 +70,19 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'status'  => 401,
+                    'status'  => 403,
                     'message' => 'Unauthorized.',
+                ], 403);
+            }
+        });
+
+        // Handle authentication exceptions and return JSON response
+        $exceptions->renderable(function (\Illuminate\Auth\AuthenticationException $exception, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 401,
+                    'message' => 'Unauthenticated.',
                 ], 401);
             }
         });

@@ -21,18 +21,28 @@ class CheckRole
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'status'  => 404,
-                    'message' => 'Not Found',
-                ], 404);
+                    'status'  => 401,
+                    'message' => 'Unauthorized. Please login to continue.',
+                ], 401);
             }
 
+            // Check if user has one of the required roles
             if (in_array($user->role, $roles)) {
                 return $next($request);
             }
 
-            return response()->json(['error' => 'Forbidden. You do not have the required role.'], 403);
+            return response()->json([
+                'success' => false,
+                'status'  => 403,
+                'message' => 'Forbidden. You do not have permission to access this resource.',
+            ], 403);
         } catch (\Throwable $th) {
-            return response()->json(['error' => 'An error occurred'], 500);
+            return response()->json([
+                'success' => false, 
+                'status'  => 500,
+                'message' => 'An error occurred while checking permissions.',
+                'error'   => $th->getMessage()
+            ], 500);
         }
     }
 }

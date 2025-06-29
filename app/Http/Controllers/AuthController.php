@@ -44,4 +44,13 @@ class AuthController extends Controller
         auth('api')->logout();
         return response()->json(['message' => 'Successfully logged out']);
     }
+
+    public function unauthenticated()
+    {
+        return response()->json([
+            "success" => false,
+            "status" => 401,
+            "message" => "Unauthenticated. Please login first",
+        ], 401);
+    }
 }

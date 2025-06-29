@@ -22,6 +22,7 @@ use App\Http\Controllers\ReservationController; // Pastikan ini ada
 // Public Routes
 Route::post('/auth/login', [App\Http\Controllers\AuthController::class, 'login']);
 Route::post('/auth/logout', [App\Http\Controllers\AuthController::class, 'logout']);
+Route::get('/unauthenticated', [App\Http\Controllers\AuthController::class, 'unauthenticated'])->name('login');
 Route::post('/auth/register', function(Request $request) {
     $role = $request->input('role');
     
@@ -36,6 +37,7 @@ Route::post('/auth/register', function(Request $request) {
 Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/reservations', [ReservationController::class, 'reservations']);
     Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
+    Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
 });
 
 // Nurse Routes
@@ -48,5 +50,7 @@ Route::middleware(['auth:api', 'role:nurse'])->group(function () {
     Route::post('/rooms/create', [RoomController::class, 'store']);
     Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
     Route::delete('/rooms/{room:id}/delete', [RoomController::class, 'deleteRoom']);
+    Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
+
 });
 // ... rute-rute lain jika ada ...
