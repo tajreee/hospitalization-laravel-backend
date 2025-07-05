@@ -29,9 +29,16 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: 2223
           script: |
+            # Periksa apakah repository sudah ada
+            if [ ! -d "${{ secrets.TARGET_DIR }}" ]; then
+               echo "Repository not found. Cloning..."
+               mkdir -p ${{ secrets.TARGET_DIR }}
+               git clone -b deployment https://github.com/tajreee/hospitalization-laravel-backend.git ${{ secrets.TARGET_DIR }}
+            fi
+
             # Masuk ke direktori proyek
             cd ${{ secrets.TARGET_DIR }}
-            
+                        
             # Tarik perubahan terbaru dari branch 'deployment'
             git pull origin deployment
 
