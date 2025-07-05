@@ -1,0 +1,69 @@
+# Nama workflow
+name: Deploy Laravel Project
+
+# Pemicu: workflow ini berjalan setiap kali ada push ke branch 'deployment'
+on:
+  push:
+    branches:
+      - deployment
+
+# Pekerjaan yang harus dilakukan
+jobs:
+  deploy:
+    # Menggunakan runner virtual Ubuntu terbaru dari GitHub
+    runs-on: ubuntu-latest
+
+    # Langkah-langkah yang akan dieksekusi
+    steps:
+      # 1. Mengambil kode dari repositori
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Login ke server via SSH dan jalankan perintah deploy
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 2223
+          script: |
+            # Periksa apakah repository sudah ada
+            if [ ! -d "${{ secrets.TARGET_DIR }}" ]; then
+               echo "Repository not found. Cloning..."
+               mkdir -p ${{ secrets.TARGET_DIR }}
+               git clone -b deployment https://github.com/tajreee/hospitalization-laravel-backend.git ${{ secrets.TARGET_DIR }}
+            fi
+
+            # Masuk ke direktori proyek
+            cd ${{ secrets.TARGET_DIR }}
+                        
+            # Tarik perubahan terbaru dari branch 'deployment'
+            git pull origin deployment
+
+            # Aktifkan maintenance mode (opsional, tapi direkomendasikan)
+            php artisan down || true
+
+            # Buat file .env dari secret yang sudah kita simpan
+            echo "${{ secrets.DOT_ENV }}" > .env
+
+            # Install dependensi Composer (tanpa dev packages)
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+            # Jalankan migrasi database
+            # Flag --force diperlukan karena berjalan di lingkungan non-interaktif
+            php artisan migrate --force
+
+            # Clear dan cache konfigurasi untuk performa
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            # Link folder storage (jika belum ada)
+            php artisan storage:link
+
+            # Matikan maintenance mode
+            php artisan up
+
+            echo "🚀 Deployment Laravel berhasil!"
