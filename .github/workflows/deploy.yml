@@ -29,18 +29,11 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: 2223
           script: |
-            # Periksa apakah direktori proyek ada, jika tidak, buat direktori baru
-            if [ ! -d "${{ secrets.TARGET_DIR }}" ]; then
-              mkdir -p ${{ secrets.TARGET_DIR }}
-              cd ${{ secrets.TARGET_DIR }}
-              git clone https://github.com/${{ github.repository }}.git .
-            else
-              # Masuk ke direktori proyek
-              cd ${{ secrets.TARGET_DIR }}
-              
-              # Tarik perubahan terbaru dari branch 'deployment'
-              git pull origin deployment
-            fi
+            # Masuk ke direktori proyek
+            cd ${{ secrets.TARGET_DIR }}
+            
+            # Tarik perubahan terbaru dari branch 'deployment'
+            git pull origin deployment
 
             # Aktifkan maintenance mode (opsional, tapi direkomendasikan)
             php artisan down || true
