@@ -1,11 +1,11 @@
 # Nama workflow
 name: Deploy Laravel Project
 
-# Pemicu: workflow ini berjalan setiap kali ada push ke branch 'deployment'
+# Pemicu: workflow ini berjalan setiap kali ada push ke branch 'main'
 on:
   push:
     branches:
-      - deployment
+      - main
 
 # Pekerjaan yang harus dilakukan
 jobs:
@@ -33,14 +33,14 @@ jobs:
             if [ ! -d "${{ secrets.TARGET_DIR }}" ]; then
                echo "Repository not found. Cloning..."
                mkdir -p ${{ secrets.TARGET_DIR }}
-               git clone -b deployment https://github.com/tajreee/hospitalization-laravel-backend.git ${{ secrets.TARGET_DIR }}
+               git clone -b main https://github.com/tajreee/hospitalization-laravel-backend.git ${{ secrets.TARGET_DIR }}
             fi
 
             # Masuk ke direktori proyek
             cd ${{ secrets.TARGET_DIR }}
                         
-            # Tarik perubahan terbaru dari branch 'deployment'
-            git pull origin deployment
+            # Tarik perubahan terbaru dari branch 'main'
+            git pull origin main
 
             # Aktifkan maintenance mode (opsional, tapi direkomendasikan)
             php artisan down || true
