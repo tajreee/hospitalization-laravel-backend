@@ -36,6 +36,13 @@ class AuthController extends Controller
 
     public function me()
     {
+        if (!auth('api')->check()) {
+            return response()->json([
+                "success" => false,
+                "status" => 401,
+                "message" => "Unauthenticated. Please login first",
+            ], 401);
+        }
         return response()->json([
             'success' => true,
             'status'  => 200,
