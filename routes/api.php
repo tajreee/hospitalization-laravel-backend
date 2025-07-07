@@ -38,6 +38,7 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/reservations', [ReservationController::class, 'reservations']);
     Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
     Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'patientDashboard']);
 });
 
 // Nurse Routes
@@ -51,6 +52,7 @@ Route::middleware(['auth:api', 'role:nurse'])->group(function () {
     Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
     Route::delete('/rooms/{room:id}/delete', [RoomController::class, 'deleteRoom']);
     Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'nurseDashboard']);
 
 });
 // ... rute-rute lain jika ada ...
