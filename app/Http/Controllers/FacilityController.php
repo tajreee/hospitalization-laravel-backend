@@ -21,7 +21,9 @@ class FacilityController extends Controller
                     'success' => true,
                     'status'  => 201,
                     'message' => 'Facility created successfully.',
-                    'facility' => $facility->only(['id', 'name', 'fee']),
+                    'data'    => [
+                        'facility' => $facility->only(['id', 'name', 'fee']),
+                    ]
                 ], 201);
             });
         } catch (\Throwable $th) {
