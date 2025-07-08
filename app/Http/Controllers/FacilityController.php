@@ -42,9 +42,11 @@ class FacilityController extends Controller
             'success' => true,
             'status'  => 200,
             'message' => 'Facilities retrieved successfully.',
-            'facilities' => $facilities->map(function ($facility) {
-                return $facility->only(['id', 'name', 'fee']);
-            }),
+            'data'    => [
+                'facilities' => $facilities->map(function ($facility) {
+                    return $facility->only(['id', 'name', 'fee']);
+                }),
+            ]
         ], 200);
     }
 
