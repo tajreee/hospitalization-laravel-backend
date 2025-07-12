@@ -23,7 +23,9 @@ class RoomController extends Controller
                     'success' => true,
                     'status'  => 201,
                     'message' => 'Room created successfully.',
-                    'room'    => $room->only(['id', 'name', 'description', 'max_capacity', 'price_per_day']),
+                    'data'    => [
+                        'room'    => $room->only(['id', 'name', 'description', 'max_capacity', 'price_per_day']),
+                    ],
                 ], 201);
             });
         } catch (\Throwable $th) {
@@ -36,12 +38,29 @@ class RoomController extends Controller
         }
     }
 
+    public function rooms() {
+        $rooms = Room::all();
+
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'Rooms retrieved successfully.',
+            'data'    => [
+                'rooms'   => $rooms->map(function ($room) {
+                    return $room->only(['id', 'name', 'description', 'max_capacity', 'price_per_day']);
+                }),
+            ],
+        ], 200);
+    }
+
     public function getRoomById(Room $room) {
         return response()->json([
             'success' => true,
             'status'  => 200,
             'message' => 'Room retrieved successfully.',
-            'room'    => $room->only(['id', 'name', 'description', 'max_capacity', 'price_per_day']),
+            'data'    => [
+                'room'    => $room->only(['id', 'name', 'description', 'max_capacity', 'price_per_day']),
+            ],
         ], 200);
     }
 
