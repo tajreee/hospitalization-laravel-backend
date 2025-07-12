@@ -59,8 +59,8 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'status'  => 200,
-            'message' => 'Successfully logged out']
-        );
+            'message' => 'Successfully logged out'
+        ]);
     }
 
     public function unauthenticated()
