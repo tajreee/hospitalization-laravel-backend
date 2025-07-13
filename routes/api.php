@@ -36,6 +36,7 @@ Route::post('/auth/register', function(Request $request) {
 // Patient Routes
 Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/reservations', [ReservationController::class, 'reservations']);
+    Route::get('/reservations/patient', [ReservationController::class, 'getReservationsByPatient']);
     Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
     Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'patientDashboard']);
@@ -45,6 +46,7 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
 Route::middleware(['auth:api', 'role:nurse'])->group(function () {
     Route::get('/patients/{patient:nik}', [PatientController::class, 'getPatientByNIK']);
     Route::post('/reservations', [ReservationController::class, 'store']);
+    Route::get('/reservations/nurse', [ReservationController::class, 'getReservationsByNurse']);
     Route::post('/facilities/create', [FacilityController::class, 'store']);
     Route::get('/facilities', [FacilityController::class, 'facilities']);
     Route::delete('/facilities/{facility:id}/delete', [FacilityController::class, 'deleteFacility']);
