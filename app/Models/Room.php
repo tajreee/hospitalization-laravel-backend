@@ -42,5 +42,25 @@ class Room extends Model
         return $this->hasMany(Reservation::class);
     }
 
+    /**
+     * Get reservations that overlap with given date range
+     */
+    public function getOverlappingReservations($dateIn, $dateOut)
+    {
+        return $this->reservations()
+            ->where('date_in', '<', $dateOut)
+            ->where('date_out', '>', $dateIn)
+            ->count();
+    }
+
+    /**
+     * Check if room is available for given date range
+     */
+    public function isAvailable($dateIn, $dateOut)
+    {
+        $overlappingCount = $this->getOverlappingReservations($dateIn, $dateOut);
+        return $overlappingCount < $this->max_capacity;
+    }
+
 
 }

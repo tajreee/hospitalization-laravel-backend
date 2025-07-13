@@ -53,6 +53,137 @@ class RoomController extends Controller
         ], 200);
     }
 
+    public function getAvailableRooms(Request $request) {
+        $dateIn = $request->input('dateIn');
+        $dateOut = $request->input('dateOut');
+
+        // Validate required parameters
+        if (!$dateIn || !$dateOut) {
+            return response()->json([
+                'success' => false,
+                'status'  => 400,
+                'message' => 'Check-in and check-out dates are required.',
+            ], 400);
+        }
+
+        // Validate date format and logic
+        try {
+            $checkInDate = \Carbon\Carbon::parse($dateIn);
+            $checkOutDate = \Carbon\Carbon::parse($dateOut);
+            
+            if ($checkOutDate->lte($checkInDate)) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 400,
+                    'message' => 'Check-out date must be after check-in date.',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'status'  => 400,
+                'message' => 'Invalid date format. Please use YYYY-MM-DD format.',
+            ], 400);
+        }
+
+        try {
+            // Get all rooms with their current reservation count for the specified date range
+            $availableRooms = Room::select('room.*')
+                ->selectRaw('COALESCE(COUNT(reservation.id), 0) as current_reservations')
+                ->leftJoin('reservation', function($join) use ($dateIn, $dateOut) {
+                    $join->on('room.id', '=', 'reservation.room_id')
+                        ->where(function($query) use ($dateIn, $dateOut) {
+                            // Find overlapping reservations - a reservation overlaps if:
+                            // 1. It starts before our checkout date AND
+                            // 2. It ends after our checkin date
+                            $query->where('reservation.date_in', '<', $dateOut)
+                                  ->where('reservation.date_out', '>', $dateIn);
+                        })
+                        ->whereNull('reservation.deleted_at'); // Only count non-deleted reservations
+                })
+                ->whereNull('room.deleted_at') // Only include non-deleted rooms
+                ->groupBy('room.id', 'room.name', 'room.description', 'room.max_capacity', 'room.price_per_day', 'room.created_at', 'room.updated_at', 'room.deleted_at')
+                ->havingRaw('COALESCE(COUNT(reservation.id), 0) < room.max_capacity')
+                ->orderBy('room.name')
+                ->get();
+
+            // Add availability information to each room
+            $roomsWithAvailability = $availableRooms->map(function ($room) {
+                return [
+                    'id' => $room->id,
+                    'name' => $room->name,
+                    'description' => $room->description,
+                    'max_capacity' => $room->max_capacity,
+                    'price_per_day' => $room->price_per_day,
+                    'current_reservations' => $room->current_reservations,
+                    'available_capacity' => $room->max_capacity - $room->current_reservations,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'status'  => 200,
+                'message' => 'Available rooms retrieved successfully.',
+                'data'    => [
+                    'rooms' => $roomsWithAvailability,
+                    'search_criteria' => [
+                        'date_in' => $dateIn,
+                        'date_out' => $dateOut,
+                    ],
+                    'total_available_rooms' => $roomsWithAvailability->count(),
+                ],
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'status'  => 500,
+                'message' => 'Failed to retrieve available rooms.',
+                'error'   => $th->getMessage()
+            ], 500);
+        }
+
+        // Alternative approach using the existing methods in the Room model
+        // try {
+        //     $availableRooms = Room::all()->filter(function ($room) use ($dateIn, $dateOut) {
+        //         return $room->isAvailable($dateIn, $dateOut);
+        //     });
+
+        //     $roomsData = $availableRooms->map(function ($room) use ($dateIn, $dateOut) {
+        //         $currentReservations = $room->getOverlappingReservations($dateIn, $dateOut);
+        //         return [
+        //             'id' => $room->id,
+        //             'name' => $room->name,
+        //             'description' => $room->description,
+        //             'max_capacity' => $room->max_capacity,
+        //             'price_per_day' => $room->price_per_day,
+        //             'current_reservations' => $currentReservations,
+        //             'available_capacity' => $room->max_capacity - $currentReservations,
+        //         ];
+        //     });
+
+        //     return response()->json([
+        //         'success' => true,
+        //         'status'  => 200,
+        //         'message' => 'Available rooms retrieved successfully.',
+        //         'data'    => [
+        //             'rooms' => $roomsData->values(),
+        //             'search_criteria' => [
+        //                 'date_in' => $dateIn,
+        //                 'date_out' => $dateOut,
+        //             ],
+        //             'total_available_rooms' => $roomsData->count(),
+        //         ],
+        //     ], 200);
+        // } catch (\Throwable $th) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'status'  => 500,
+        //         'message' => 'Failed to retrieve available rooms.',
+        //         'error'   => $th->getMessage()
+        //     ], 500);
+        // }
+    }
+
     public function getRoomById(Room $room) {
         return response()->json([
             'success' => true,
