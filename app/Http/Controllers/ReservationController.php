@@ -69,4 +69,28 @@ class ReservationController extends Controller
             'data'    => $reservations,
         ], 200);
     }
+
+    public function getReservationsByNurse(Request $request) {
+        $nurseId = auth('api')->user()->nurse->id;
+
+        $reservations = Reservation::with([
+            'patient', 
+            'patient.user', // Include the user relationship from patient
+            'nurse', 
+            'room', 
+            'facilities'
+        ])
+            ->where('nurse_id', $nurseId)
+            ->latest()
+            ->paginate($request->per_page ?? 10);
+        
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'Reservations for nurse retrieved successfully.',
+            'data'    => [
+                'reservations'    => $reservations
+            ],
+        ]);
+    }
 }
