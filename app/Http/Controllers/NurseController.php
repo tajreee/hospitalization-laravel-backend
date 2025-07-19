@@ -35,4 +35,23 @@ class NurseController extends Controller
             throw $th;
         }
     }
+
+    public function getAllNurses(Request $request)
+    {
+        $nurses = Nurse::with('user')->get();
+
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'List of all nurses.',
+            'data'    => $nurses->map(function ($nurse) {
+                return [
+                    'id'    => $nurse->id,
+                    'name'  => $nurse->user->name,
+                    'email' => $nurse->user->email,
+                    'role'  => $nurse->user->role,
+                ];
+            }),
+        ], 200);
+    }
 }
