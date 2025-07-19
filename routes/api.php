@@ -55,7 +55,7 @@ Route::middleware(['auth:api', 'role:nurse'])->group(function () {
     Route::get('/rooms/available', [RoomController::class, 'getAvailableRooms']);
     Route::post('/rooms/create', [RoomController::class, 'store']);
     // Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
-    Route::get('/rooms/{room:id}', [RoomController::class, 'getReservationBetweenDates']);
+    Route::get('/rooms/{room:id}', [RoomController::class, 'getReservationsBetweenDates']);
     Route::delete('/rooms/{room:id}/delete', [RoomController::class, 'deleteRoom']);
     Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'nurseDashboard']);
