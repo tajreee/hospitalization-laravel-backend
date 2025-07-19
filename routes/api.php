@@ -53,7 +53,7 @@ Route::middleware(['auth:api', 'role:nurse'])->group(function () {
     Route::delete('/facilities/{facility:id}/delete', [FacilityController::class, 'deleteFacility']);
     Route::get('/rooms', [RoomController::class, 'rooms']);
     Route::get('/rooms/available', [RoomController::class, 'getAvailableRooms']);
-    Route::get('/rooms/{room:id}', [RoomController::class, 'getReservationsBetweenDates']);
+    // Route::get('/rooms/{room:id}', [RoomController::class, 'getReservationsBetweenDates']);
     Route::post('/rooms/create', [RoomController::class, 'store']);
     // Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
     Route::delete('/rooms/{room:id}/delete', [RoomController::class, 'deleteRoom']);
