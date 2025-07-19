@@ -45,7 +45,7 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
 // Nurse Routes
 Route::middleware(['auth:api', 'role:nurse'])->group(function () {
     Route::get('/patients/{patient:nik}', [PatientController::class, 'getPatientByNIK']);
-    Route::post('/reservations', [ReservationController::class, 'store']);
+    Route::post('/reservations/create', [ReservationController::class, 'store']);
     Route::get('/reservations/nurse', [ReservationController::class, 'getReservationsByNurse']);
     Route::post('/facilities/create', [FacilityController::class, 'store']);
     Route::get('/facilities', [FacilityController::class, 'facilities']);
