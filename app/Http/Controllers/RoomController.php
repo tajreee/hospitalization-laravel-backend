@@ -195,6 +195,91 @@ class RoomController extends Controller
         ], 200);
     }
 
+    public function getReservationsBetweenDates(Room $room, Request $request) {
+        $dateIn = $request->input('dateIn');
+        $dateOut = $request->input('dateOut');
+
+        // Validate required parameters
+        if (!$dateIn) {
+            $dateIn = now()->startOfDay()->toDateString();
+        }
+
+        if (!$dateOut) {
+            $dateOut = \Carbon\Carbon::parse($dateIn)->addDay()->toDateString();
+        }
+
+        try {
+            $checkInDate = \Carbon\Carbon::parse($dateIn);
+            $checkOutDate = \Carbon\Carbon::parse($dateOut);
+            
+            if ($checkOutDate->lte($checkInDate)) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 400,
+                    'message' => 'Check-out date must be after check-in date.',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'status'  => 400,
+                'message' => 'Invalid date format. Please use YYYY-MM-DD format.',
+            ], 400);
+        }
+
+        try {
+            // Find reservations that overlap with the given date range
+            // A reservation overlaps if:
+            // 1. It starts before our end date AND
+            // 2. It ends after our start date
+            $reservations = Reservation::with([
+                'patient', 
+                'patient.user',
+                'nurse', 
+                'room', 
+                'facilities'
+            ])
+                ->where('room_id', $room->id)
+                ->where(function($query) use ($dateIn, $dateOut) {
+                    $query->where('date_in', '<', $dateOut)
+                          ->where('date_out', '>', $dateIn);
+                })
+                ->latest()
+                ->paginate($request->per_page ?? 10);
+
+            // Calculate summary statistics
+            $totalReservations = $reservations->total();
+            $currentPageReservations = $reservations->count();
+
+            return response()->json([
+                'success' => true,
+                'status'  => 200,
+                'message' => 'Reservations between dates retrieved successfully.',
+                'data'    => [
+                    'reservations' => $reservations,
+                    'search_criteria' => [
+                        'room_id' => $roomId,
+                        'date_in' => $dateIn,
+                        'date_out' => $dateOut,
+                    ],
+                    'summary' => [
+                        'total_reservations' => $totalReservations,
+                        'current_page_count' => $currentPageReservations,
+                        'date_range_days' => $checkInDate->diffInDays($checkOutDate),
+                    ]
+                ],
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'status'  => 500,
+                'message' => 'Failed to retrieve reservations.',
+                'error'   => $th->getMessage()
+            ], 500);
+        }
+    }
+
     public function deleteRoom(Room $room) {
         try {
             return DB::transaction(function () use ($room) {
