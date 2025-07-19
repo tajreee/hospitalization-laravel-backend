@@ -40,6 +40,7 @@ Route::middleware(['auth:api', 'role:patient'])->group(function () {
     Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
     Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'patientDashboard']);
+    Route::get('/reservations/by-date', [ReservationController::class, 'getReservationBetweenDates']);
 });
 
 // Nurse Routes
@@ -47,10 +48,12 @@ Route::middleware(['auth:api', 'role:nurse'])->group(function () {
     Route::get('/patients/{patient:nik}', [PatientController::class, 'getPatientByNIK']);
     Route::post('/reservations', [ReservationController::class, 'store']);
     Route::get('/reservations/nurse', [ReservationController::class, 'getReservationsByNurse']);
+    Route::get('/reservations/by-date', [ReservationController::class, 'getReservationBetweenDates']);
     Route::post('/facilities/create', [FacilityController::class, 'store']);
     Route::get('/facilities', [FacilityController::class, 'facilities']);
     Route::delete('/facilities/{facility:id}/delete', [FacilityController::class, 'deleteFacility']);
     Route::get('/rooms', [RoomController::class, 'rooms']);
+    Route::get('/rooms/available', [RoomController::class, 'getAvailableRooms']);
     Route::post('/rooms/create', [RoomController::class, 'store']);
     Route::get('/rooms/{room:id}', [RoomController::class, 'getRoomById']);
     Route::delete('/rooms/{room:id}/delete', [RoomController::class, 'deleteRoom']);
