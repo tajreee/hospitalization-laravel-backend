@@ -28,16 +28,18 @@ class ReservationController extends Controller
                     'success' => true,
                     'status'  => 201,
                     'message' => 'Reservation created successfully.',
-                    'reservation' => $reservation->only([
-                        'id',
-                        'date_in',
-                        'date_out',
-                        'total_fee',
-                        'patient_id',
-                        'nurse_id',
-                        'room_id',
-                        'facilities',
-                    ]),
+                    'data' => [
+                        'reservation' => $reservation->only([
+                           'id',
+                           'date_in',
+                           'date_out',
+                           'total_fee',
+                           'patient_id',
+                           'nurse_id',
+                           'room_id',
+                           'facilities',
+                       ]),
+                    ]
                 ], 201);
             });
         } catch (\Throwable $th) {
