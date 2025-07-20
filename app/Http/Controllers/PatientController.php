@@ -46,14 +46,16 @@ class PatientController extends Controller
             'success' => true,
             'status'  => 200,
             'message' => 'Data pasien berhasil ditemukan.',
-            'patient' => [
-                'user_id' => $patient->user_id,
-                'name' => $patient->user->name,
-                'email' => $patient->user->email,
-                'gender' => $patient->user->gender,
-                'nik' => $patient->nik,
-                'birth_date' => $patient->birth_date,
-            ],
+            'data'    => [
+                'patient' => [
+                    'id' => $patient->user_id,
+                    'name' => $patient->user->name,
+                    'email' => $patient->user->email,
+                    'gender' => $patient->user->gender,
+                    'nik' => $patient->nik,
+                    'birth_date' => $patient->birth_date,
+                ],
+            ]
         ], 200);
     }
 }
