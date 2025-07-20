@@ -100,6 +100,88 @@ class Reservation extends Model
     }
     
     /**
+     * Calculate total fee based on room price per day, number of days, and facilities
+     *
+     * @param array $facilityIds Array of facility IDs (optional, if not provided will use existing facilities)
+     * @return float
+     */
+    public function calculateTotalFee($facilityIds = null): float
+    {
+        // Calculate number of days
+        $dateIn = $this->date_in instanceof \DateTime ? $this->date_in : new \DateTime($this->date_in);
+        $dateOut = $this->date_out instanceof \DateTime ? $this->date_out : new \DateTime($this->date_out);
+        $numberOfDays = max(1, $dateIn->diff($dateOut)->days); // Minimum 1 day
+        
+        // Get room price per day
+        $roomPricePerDay = $this->room ? $this->room->price_per_day : 0;
+        $roomTotalCost = $roomPricePerDay * $numberOfDays;
+        
+        // Calculate facilities cost
+        $facilitiesCost = 0;
+        
+        if ($facilityIds) {
+            // Use provided facility IDs (for new reservations)
+            $facilities = Facility::whereIn('id', $facilityIds)->get();
+            $facilitiesCost = $facilities->sum('fee');
+        } else {
+            // Use existing facilities (for existing reservations)
+            $facilitiesCost = $this->facilities->sum('fee');
+        }
+        
+        return $roomTotalCost + $facilitiesCost;
+    }
+    
+    /**
+     * Update the total fee and save the model
+     *
+     * @param array $facilityIds Array of facility IDs (optional)
+     * @return bool
+     */
+    public function updateTotalFee($facilityIds = null): bool
+    {
+        $this->total_fee = $this->calculateTotalFee($facilityIds);
+        return $this->save();
+    }
+    
+    /**
+     * Get the number of days for this reservation
+     *
+     * @return int
+     */
+    public function getNumberOfDaysAttribute(): int
+    {
+        if (!$this->date_in || !$this->date_out) {
+            return 0;
+        }
+        
+        $dateIn = $this->date_in instanceof \DateTime ? $this->date_in : new \DateTime($this->date_in);
+        $dateOut = $this->date_out instanceof \DateTime ? $this->date_out : new \DateTime($this->date_out);
+        
+        return max(1, $dateIn->diff($dateOut)->days);
+    }
+    
+    /**
+     * Get the room cost (price per day * number of days)
+     *
+     * @return float
+     */
+    public function getRoomCostAttribute(): float
+    {
+        $roomPricePerDay = $this->room ? $this->room->price_per_day : 0;
+        return $roomPricePerDay * $this->number_of_days;
+    }
+    
+    /**
+     * Get the total facilities cost
+     *
+     * @return float
+     */
+    public function getFacilitiesCostAttribute(): float
+    {
+        return $this->facilities->sum('fee');
+    }
+    
+    /**
      * Get the formatted total fee
      *
      * @return string
@@ -137,5 +219,31 @@ class Reservation extends Model
     public function getFormattedIdAttribute(): string
     {
         return $this->id ? strtoupper($this->id) : '';
+    }
+
+    /**
+     * Scope to find reservations that overlap with given date range
+     */
+    public function scopeOverlappingDates($query, $dateIn, $dateOut)
+    {
+        return $query->where('date_in', '<', $dateOut)
+                     ->where('date_out', '>', $dateIn);
+    }
+
+    /**
+     * Scope to find reservations within given date range
+     */
+    public function scopeWithinDates($query, $dateIn, $dateOut)
+    {
+        return $query->where('date_in', '>=', $dateIn)
+                     ->where('date_out', '<=', $dateOut);
+    }
+
+    /**
+     * Scope to find reservations for specific room
+     */
+    public function scopeForRoom($query, $roomId)
+    {
+        return $query->where('room_id', $roomId);
     }
 }

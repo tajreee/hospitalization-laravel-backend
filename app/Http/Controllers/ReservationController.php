@@ -12,33 +12,37 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request){
         try {
             return DB::transaction(function () use ($request) {
+                // Create reservation without total_fee first
                 $reservation = Reservation::create([
                     'date_in' => $request->date_in,
                     'date_out' => $request->date_out,
-                    'total_fee' => $request->total_fee,
                     'patient_id' => $request->patient_id,
                     'nurse_id' => $request->nurse_id,
                     'room_id' => $request->room_id,
-                    'facilities' => $request->facilities,
+                    'total_fee' => 0, // Will be calculated later
                 ]);
 
+                // Attach facilities
                 $reservation->facilities()->attach($request->facilities);
+
+                // Calculate and update total fee
+                $reservation->updateTotalFee($request->facilities);
+
+                // Load relationships for response
+                $reservation->load(['patient', 'patient.user', 'nurse', 'room', 'facilities']);
 
                 return response()->json([
                     'success' => true,
                     'status'  => 201,
                     'message' => 'Reservation created successfully.',
                     'data' => [
-                        'reservation' => $reservation->only([
-                           'id',
-                           'date_in',
-                           'date_out',
-                           'total_fee',
-                           'patient_id',
-                           'nurse_id',
-                           'room_id',
-                           'facilities',
-                       ]),
+                        'reservation' => $reservation,
+                        'cost_breakdown' => [
+                            'number_of_days' => $reservation->number_of_days,
+                            'room_cost' => $reservation->room_cost,
+                            'facilities_cost' => $reservation->facilities_cost,
+                            'total_fee' => $reservation->total_fee,
+                        ]
                     ]
                 ], 201);
             });
