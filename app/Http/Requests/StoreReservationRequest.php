@@ -24,7 +24,6 @@ class StoreReservationRequest extends FormRequest
         return [
             'date_in'     => ['required', 'date', 'after_or_equal:today'],
             'date_out'    => ['required', 'date', 'after:date_in'],
-            'total_fee'   => ['required', 'numeric', 'min:0'],
             'patient_id'  => ['required', 'exists:patient,user_id'],
             'nurse_id'    => ['required', 'exists:nurse,user_id'],
             'room_id'     => ['required', 'exists:room,id'],
