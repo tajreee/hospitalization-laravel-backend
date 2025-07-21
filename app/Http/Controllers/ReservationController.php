@@ -72,10 +72,11 @@ class ReservationController extends Controller
         $transformedReservations = $reservations->getCollection()->map(function ($reservation) {
             return [
                 'id' => $reservation->id,
-                'patient_name' => $reservation->patient->user->name ?? 'N/A',
-                'nurse_name' => $reservation->nurse->name ?? 'N/A',
-                'date_in' => $reservation->date_in,
-                'date_out' => $reservation->date_out,
+                'patientName' => $reservation->patient->user->name ?? 'N/A',
+                'nurseName' => $reservation->nurse->user->name ?? 'N/A',
+                'roomName' => $reservation->room->name ?? 'N/A',
+                'dateIn' => $reservation->date_in,
+                'dateOut' => $reservation->date_out,
             ];
         });
 
@@ -113,10 +114,11 @@ class ReservationController extends Controller
         $transformedReservations = $reservations->map(function ($reservation) {
             return [
                 'id' => $reservation->id,
-                'patient_name' => $reservation->patient->user->name ?? 'N/A',
-                'nurse_name' => $reservation->nurse->user->name ?? 'N/A',
-                'date_in' => $reservation->date_in,
-                'date_out' => $reservation->date_out,
+                'patientName' => $reservation->patient->user->name ?? 'N/A',
+                'nurseName' => $reservation->nurse->user->name ?? 'N/A',
+                'roomName' => $reservation->room->name ?? 'N/A',
+                'dateIn' => $reservation->date_in,
+                'dateOut' => $reservation->date_out,
             ];
         });
         
@@ -148,10 +150,11 @@ class ReservationController extends Controller
         $transformedReservations = $reservations->getCollection()->map(function ($reservation) {
             return [
                 'id' => $reservation->id,
-                'patient_name' => $reservation->patient->user->name ?? 'N/A',
-                'nurse_name' => $reservation->nurse->user->name ?? 'N/A',
-                'date_in' => $reservation->date_in,
-                'date_out' => $reservation->date_out,
+                'patientName' => $reservation->patient->user->name ?? 'N/A',
+                'nurseName' => $reservation->nurse->user->name ?? 'N/A',
+                'roomName' => $reservation->room->name ?? 'N/A',
+                'dateIn' => $reservation->date_in,
+                'dateOut' => $reservation->date_out,
             ];
         });
         
