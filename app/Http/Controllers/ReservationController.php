@@ -68,16 +68,35 @@ class ReservationController extends Controller
             ->latest()
             ->paginate($request->per_page ?? 10);
 
+        // Transform the data to only include required fields
+        $transformedReservations = $reservations->getCollection()->map(function ($reservation) {
+            return [
+                'id' => $reservation->id,
+                'patient_name' => $reservation->patient->user->name ?? 'N/A',
+                'nurse_name' => $reservation->nurse->name ?? 'N/A',
+                'date_in' => $reservation->date_in,
+                'date_out' => $reservation->date_out,
+            ];
+        });
+
         return response()->json([
             'success' => true,
             'status'  => 200,
             'message' => 'Reservations retrieved successfully.',
-            'data'    => $reservations,
+            'data'    => [
+                'reservations' => $transformedReservations,
+                'pagination' => [
+                    'current_page' => $reservations->currentPage(),
+                    'per_page' => $reservations->perPage(),
+                    'total' => $reservations->total(),
+                    'last_page' => $reservations->lastPage(),
+                ]
+            ],
         ], 200);
     }
 
     public function getReservationsByNurse(Request $request) {
-        $nurseId = auth('api')->user()->nurse->user_id;
+        $nurseId = auth('api')->user()->id; // Use user id directly since nurse_id references users table
 
         $reservations = Reservation::with([
             'patient', 
@@ -88,20 +107,31 @@ class ReservationController extends Controller
         ])
             ->where('nurse_id', $nurseId)
             ->latest()
-            ->paginate($request->per_page ?? 10);
+            ->get(); // Changed to get() since you commented out pagination
+
+        // Transform the data to only include required fields
+        $transformedReservations = $reservations->map(function ($reservation) {
+            return [
+                'id' => $reservation->id,
+                'patient_name' => $reservation->patient->user->name ?? 'N/A',
+                'nurse_name' => $reservation->nurse->name ?? 'N/A',
+                'date_in' => $reservation->date_in,
+                'date_out' => $reservation->date_out,
+            ];
+        });
         
         return response()->json([
             'success' => true,
             'status'  => 200,
             'message' => 'Reservations for nurse retrieved successfully.',
             'data'    => [
-                'reservations'    => $reservations
+                'reservations' => $transformedReservations
             ],
         ]);
     }
 
     public function getReservationsByPatient(Request $request) {
-        $patientId = auth('api')->user()->patient->id;
+        $patientId = auth('api')->user()->id; // Use user id since patient_id references user_id
 
         $reservations = Reservation::with([
             'patient', 
@@ -113,13 +143,30 @@ class ReservationController extends Controller
             ->where('patient_id', $patientId)
             ->latest()
             ->paginate($request->per_page ?? 10);
+
+        // Transform the data to only include required fields
+        $transformedReservations = $reservations->getCollection()->map(function ($reservation) {
+            return [
+                'id' => $reservation->id,
+                'patient_name' => $reservation->patient->user->name ?? 'N/A',
+                'nurse_name' => $reservation->nurse->name ?? 'N/A',
+                'date_in' => $reservation->date_in,
+                'date_out' => $reservation->date_out,
+            ];
+        });
         
         return response()->json([
             'success' => true,
             'status'  => 200,
             'message' => 'Reservations for patient retrieved successfully.',
             'data'    => [
-                'reservations'    => $reservations
+                'reservations' => $transformedReservations,
+                'pagination' => [
+                    'current_page' => $reservations->currentPage(),
+                    'per_page' => $reservations->perPage(),
+                    'total' => $reservations->total(),
+                    'last_page' => $reservations->lastPage(),
+                ]
             ],
         ]);
     }
