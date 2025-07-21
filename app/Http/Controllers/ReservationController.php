@@ -114,7 +114,7 @@ class ReservationController extends Controller
             return [
                 'id' => $reservation->id,
                 'patient_name' => $reservation->patient->user->name ?? 'N/A',
-                'nurse_name' => $reservation->nurse->name ?? 'N/A',
+                'nurse_name' => $reservation->nurse->user->name ?? 'N/A',
                 'date_in' => $reservation->date_in,
                 'date_out' => $reservation->date_out,
             ];
@@ -149,7 +149,7 @@ class ReservationController extends Controller
             return [
                 'id' => $reservation->id,
                 'patient_name' => $reservation->patient->user->name ?? 'N/A',
-                'nurse_name' => $reservation->nurse->name ?? 'N/A',
+                'nurse_name' => $reservation->nurse->user->name ?? 'N/A',
                 'date_in' => $reservation->date_in,
                 'date_out' => $reservation->date_out,
             ];
