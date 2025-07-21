@@ -77,7 +77,7 @@ class ReservationController extends Controller
     }
 
     public function getReservationsByNurse(Request $request) {
-        $nurseId = auth('api')->user()->nurse->id;
+        $nurseId = auth('api')->user()->nurse->user_id;
 
         $reservations = Reservation::with([
             'patient', 
