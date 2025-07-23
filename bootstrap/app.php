@@ -27,17 +27,17 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
-                // ->response(function (Request $request, array $headers) {
-                //     return response()->json([
-                //         'success' => false,
-                //         'status' => 429,
-                //         'message' => 'Too many requests. Please slow down.',
-                //         'retry_after' => $headers['Retry-After'] ?? 60
-                //     ], 429);
-                // });
-        });
+        // RateLimiter::for('api', function (Request $request) {
+        //     return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip())
+        //         ->response(function (Request $request, array $headers) {
+        //             return response()->json([
+        //                 'success' => false,
+        //                 'status' => 429,
+        //                 'message' => 'Too many requests. Please slow down.',
+        //                 'retry_after' => $headers['Retry-After'] ?? 60
+        //             ], 429);
+        //         });
+        // });
     })
 
     ->withExceptions(function (Exceptions $exceptions): void {
