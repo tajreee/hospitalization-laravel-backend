@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -42,57 +46,86 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         // Handle model not found exceptions and return JSON response
-        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $exception, Request $request) {
-            if ($request->expectsJson() || $request->is('api/*')) {
-                // Check if the previous exception was ModelNotFoundException
-                if ($exception->getPrevious() instanceof ModelNotFoundException) {
-                    return response()->json([
-                    'success' => false,
-                    'status'  => 404,
-                    'message' => 'Data not found.',
-                    ], 404);
-                }
-            
-            // Handle generic 404 errors
-            return response()->json([
-                'success' => false,
-                'status'  => 404,
-                'message' => 'Not found.',
-            ], 404);
-            }
-        });
-
-        // Handle method not allowed exceptions and return JSON response
-        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $exception, Request $request) {
+        $exceptions->renderable(function (ModelNotFoundException $exception, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'status'  => 405,
-                    'message' => 'Method not allowed.',
-                ], 405);
+                    'status'  => 404,
+                    'message' => 'Resource not found.',
+                ], 404);
             }
         });
 
-        // Handle unauthorized exceptions and return JSON response
-        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException $exception, Request $request) {
+        // Handle JWT Token Expired Exception
+        $exceptions->renderable(function (TokenExpiredException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 401,
+                    'message' => 'Token has expired. Please login again.',
+                    'error_code' => 'TOKEN_EXPIRED'
+                ], 401);
+            }
+        });
+
+        // Handle JWT Token Invalid Exception
+        $exceptions->renderable(function (TokenInvalidException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 401,
+                    'message' => 'Token is invalid. Please login again.',
+                    'error_code' => 'TOKEN_INVALID'
+                ], 401);
+            }
+        });
+
+        // Handle JWT Token Blacklisted Exception
+        $exceptions->renderable(function (TokenBlacklistedException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 401,
+                    'message' => 'Token has been blacklisted. Please login again.',
+                    'error_code' => 'TOKEN_BLACKLISTED'
+                ], 401);
+            }
+        });
+
+        // Handle General JWT Exception
+        $exceptions->renderable(function (JWTException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 401,
+                    'message' => 'Token not provided or invalid. Please login first.',
+                    'error_code' => 'TOKEN_ABSENT'
+                ], 401);
+            }
+        });
+
+        // Handle Unauthenticated Exception (when middleware auth fails)
+        $exceptions->renderable(function (\Illuminate\Auth\AuthenticationException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 401,
+                    'message' => 'Unauthenticated. Please login first.',
+                    'error_code' => 'UNAUTHENTICATED'
+                ], 401);
+            }
+        });
+
+        // Handle Authorization Exception (when user doesn't have permission)
+        $exceptions->renderable(function (\Illuminate\Auth\Access\AuthorizationException $exception, Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'status'  => 403,
-                    'message' => 'Unauthorized.',
+                    'message' => 'This action is unauthorized.',
+                    'error_code' => 'FORBIDDEN'
                 ], 403);
             }
         });
-
-        // Handle authentication exceptions and return JSON response
-        $exceptions->renderable(function (\Illuminate\Auth\AuthenticationException $exception, Request $request) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'success' => false,
-                    'status'  => 401,
-                    'message' => 'Unauthenticated.',
-                ], 401);
-            }
-        });
-        
-    })->create();
+    })
+    ->create();
