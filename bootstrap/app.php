@@ -127,5 +127,16 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 403);
             }
         });
+
+        $exceptions->renderable(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $exception, Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'status'  => 429,
+                    'message' => 'Too many requests. Please slow down.',
+                    'error_code' => 'TOO_MANY_REQUESTS'
+                ], 429);
+            }
+        });
     })
     ->create();
