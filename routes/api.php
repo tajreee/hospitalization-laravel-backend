@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redis;
 
 // Import controllers
 use App\Http\Controllers\PatientController;
@@ -12,6 +13,32 @@ use App\Http\Controllers\ReservationController;
 
 // Apply throttle globally to all API routes
 Route::middleware(['throttle:api'])->group(function () {
+    Route::get('/test-redis', function () {
+    try {
+        // Coba tulis sesuatu ke Redis
+        Redis::set('test_koneksi', 'Halo Redis dari Laravel!');
+
+        // Coba baca kembali
+        $value = Redis::get('test_koneksi');
+
+        // Hapus kunci setelah tes
+        Redis::del('test_koneksi');
+
+        return response()->json([
+            'success' => true,
+            'status'  => 200,
+            'message' => 'Koneksi Redis Berhasil!', 'value' => $value
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'status'  => 500,
+            'message' => 'Gagal terhubung ke Redis.',
+            'error'   => $e->getMessage()
+        ], 500);
+    }
+});
     
     /*
     |--------------------------------------------------------------------------
