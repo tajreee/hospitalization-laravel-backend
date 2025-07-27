@@ -108,5 +108,9 @@ Route::middleware(['throttle:api'])->group(function () {
         Route::delete('/rooms/{room:id}/delete', [RoomController::class, 'deleteRoom']);
         Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me']);
         Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'nurseDashboard']);
+        
+        // Cache management routes
+        Route::post('/facilities/cache/refresh', [FacilityController::class, 'refreshCache']);
+        Route::get('/facilities/cache/stats', [FacilityController::class, 'cacheStats']);
     });
 });
